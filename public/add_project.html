@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management</title>
+</head>
+<body>
+    <h1>Project Management</h1>
+
+    <!-- Form for Adding a Project -->
+    <h2>Add a New Project</h2>
+    <form id="projectForm" enctype="multipart/form-data">
+        <label for="projectName">Project Name:</label>
+        <input type="text" id="projectName" name="projectName" required>
+        <br><br>
+
+        <label for="openDay">Open Day:</label>
+        <input type="date" id="openDay" name="openDay" required>
+        <br><br>
+
+        <label for="turnOffDay">Turn Off Day:</label>
+        <input type="date" id="turnOffDay" name="turnOffDay" required>
+        <br><br>
+
+        <label for="projectFile">Project File:</label>
+        <input type="file" id="projectFile" name="projectFile" accept=".pdf,.doc,.docx,.zip" required>
+        <br><br>
+
+        <button type="submit">Add Project</button>
+    </form>
+
+    <script>
+        document.getElementById('projectForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const accessToken = localStorage.getItem('accessToken');
+            // สร้าง FormData object
+            const formData = new FormData();
+            formData.append('ProjectName', document.getElementById('projectName').value);
+            formData.append('Openday', document.getElementById('openDay').value);
+            formData.append('Turnoffday', document.getElementById('turnOffDay').value);
+            formData.append('ProjectFile', document.getElementById('projectFile').files[0]);
+
+            try {
+                const response = await fetch('/api/admin/create/project', {
+                    method: 'POST',
+                    headers : {
+                        'Authorization': `Bearer ${accessToken}`,
+
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Project added successfully!');
+                    window.location.href = '/admin/projects'; 
+                } else {
+                    alert('Failed to add project: ' + await response.text());
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
+
